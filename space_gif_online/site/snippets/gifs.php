@@ -1,7 +1,4 @@
-  <div class="col-md-12">
-    <h2>Latest GIFs</h2>
 
-  </div>
   <div class="row">
 
     <?php foreach (page('gifs')->images() as $image) : ?>
