@@ -1,7 +1,8 @@
-#!/bin/bash python
+#!/usr/bin/env python
 
 import io, time
 import RPi.GPIO as GPIO
+import subprocess
 
 def mainLoop():
     # Deactivate autofocus for all cameras
@@ -11,7 +12,14 @@ def mainLoop():
                  "/dev/video3"]
 
     for dev in cameraDev:
-        command = "v4l2-ctl -d " + dev + "--set-ctrl=focus_auto=0"
+        command = "v4l2-ctl -d " + dev + " --set-ctrl=focus_auto=0"
+        print(command)
+        process = subprocess.Popen(command.split(), stdout=subprocess.PIPE)
+        output = process.communicate()[0]
+        print(output)
+
+        command = "v4l2-ctl -d " + dev + " --set-ctrl=focus_absolute=400"
+        print(command)
         process = subprocess.Popen(command.split(), stdout=subprocess.PIPE)
         output = process.communicate()[0]
         print(output)
