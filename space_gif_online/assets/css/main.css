@@ -97,13 +97,13 @@ body {
   max-width: 960px;
 }
 .pt {
-  padding-top: 15px;
+  padding-top: 22px;
 }
 
 /* Header
 -------------------------------------------------- */
 .header {
-  border-bottom: 2px solid red;
+  border-bottom: 2px solid yellow;
   margin-bottom: 1.5em;
 }
 .logo {
@@ -208,7 +208,7 @@ h2 {
   line-height: 1.25em;
   font-weight: 300;
   margin-bottom: .5em;
-  color: red;
+  color: rgb(0, 0, 98);
 }
 h3 {
   font-size: 1.4em;

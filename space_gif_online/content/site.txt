@@ -1,8 +1,8 @@
-Title: Kirby Starterkit
+Title: 3D Space GIF
 
 ----
 
-Author: Bastian Allgeier GmbH
+Author: Mozzarellabs
 
 ----
 
@@ -10,7 +10,7 @@ Description: This is Kirby's Starterkit.
 
 ----
 
-Keywords: Kirby, CMS, file-based
+Keywords: GIF, machine, 3D, 3D printed
 
 ----
 
