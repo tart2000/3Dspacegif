@@ -16,4 +16,5 @@ class Camera
     private:
         std::unique_ptr<cv::VideoCapture> _camera;
         cv::Mat _frame;
+        int _cameraIndex {-1};
 };
