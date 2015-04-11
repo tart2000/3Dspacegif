@@ -11,14 +11,20 @@ def mainLoop():
                  "/dev/video2",
                  "/dev/video3"]
 
-    for dev in cameraDev:
-        command = "v4l2-ctl -d " + dev + " --set-ctrl=focus_auto=0"
+    cameraFocus = ["300",
+                   "400",
+                   "500",
+                   "350"]
+
+    #for dev in cameraDev:
+    for idx in range(0, 4):
+        command = "v4l2-ctl -d " + cameraDev[idx] + " --set-ctrl=focus_auto=0"
         print(command)
         process = subprocess.Popen(command.split(), stdout=subprocess.PIPE)
         output = process.communicate()[0]
         print(output)
 
-        command = "v4l2-ctl -d " + dev + " --set-ctrl=focus_absolute=500"
+        command = "v4l2-ctl -d " + cameraDev[idx] + " --set-ctrl=focus_absolute=" + cameraFocus[idx]
         print(command)
         process = subprocess.Popen(command.split(), stdout=subprocess.PIPE)
         output = process.communicate()[0]

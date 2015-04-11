@@ -15,13 +15,13 @@
 using namespace std;
 
 /*************/
-void rotate(cv::Mat& frame)
+void rotateAndShift(cv::Mat& frame, int shift = 0)
 {
     cv::Mat dst(frame.cols, frame.rows, frame.type());
 
     for (int y = 0; y < frame.rows; ++y)
-        for (int x = 0; x < frame.cols; ++x)
-            dst.at<cv::Vec3b>(x, y) = frame.at<cv::Vec3b>(frame.rows - y, x);
+        for (int x = shift; x < frame.cols; ++x)
+            dst.at<cv::Vec3b>(x, y) = frame.at<cv::Vec3b>(frame.rows - y, x - shift);
 
     frame = dst;
 }
@@ -49,13 +49,14 @@ int main(int argc, char** argv)
             cout << "Error grabbing on one camera" << endl;
     }
 
-    // Retrieve
+    // Retrieve, rotate and shift
+    vector<int> cameraShift {6, 28, 19, 0};
     int camIndex = 0;
     vector<string> inFiles;
     for (auto& cam : cameras)
     {
         cv::Mat frame = cam->retrieve();
-        rotate(frame);
+        rotateAndShift(frame, cameraShift[camIndex]);
         string filename = GRAB_BASE_NAME + to_string(camIndex) + ".png";
         cv::imwrite(filename, frame);
         inFiles.push_back(filename);
