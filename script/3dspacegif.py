@@ -18,7 +18,7 @@ def mainLoop():
         output = process.communicate()[0]
         print(output)
 
-        command = "v4l2-ctl -d " + dev + " --set-ctrl=focus_absolute=400"
+        command = "v4l2-ctl -d " + dev + " --set-ctrl=focus_absolute=500"
         print(command)
         process = subprocess.Popen(command.split(), stdout=subprocess.PIPE)
         output = process.communicate()[0]
