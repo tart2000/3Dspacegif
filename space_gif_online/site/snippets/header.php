@@ -21,7 +21,7 @@
 
   <header class="header cf container pt" role="banner">
     <a class="logo" href="<?php echo url() ?>">
-      <img src="<?php echo url('assets/images/logo_TCC_sign_S.png') ?>" alt="<?php echo $site->title()->html() ?>" />
+      <img src="<?php echo url('assets/images/zz.png') ?>" alt="<?php echo $site->title()->html() ?>" />
     </a>
     <?php snippet('menu') ?>
   </header>

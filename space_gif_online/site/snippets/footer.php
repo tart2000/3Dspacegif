@@ -1,11 +1,11 @@
   <footer class="footer cf container pt" role="contentinfo">
 
     <div class="copyright">
-      <?php echo $site->copyright()->kirbytext() ?>
+      
     </div>
 
     <div class="colophon">
-      <a href="http://getkirby.com/">Made with Kirby and <b>♥</b></a>
+      Made with <b>♥</b> by <a href="http://mozzarellabs.com/">Mozzarellabs</a> during MTL's 2015 Space Apps Challenge.
     </div>
 
   </footer>
