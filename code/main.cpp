@@ -53,6 +53,7 @@ int main(int argc, char** argv)
     vector<int> cameraShift {6, 28, 19, 0};
     int camIndex = 0;
     vector<string> inFiles;
+    vector<cv::Mat> frames;
     for (auto& cam : cameras)
     {
         cv::Mat frame = cam->retrieve();
@@ -60,33 +61,38 @@ int main(int argc, char** argv)
         string filename = GRAB_BASE_NAME + to_string(camIndex) + ".png";
         cv::imwrite(filename, frame);
         inFiles.push_back(filename);
+        frames.push_back(frame);
         camIndex++;
     }
+
+    // Save copies of the two intermediate images
+    cv::imwrite(GRAB_BASE_NAME + string("4.png"), frames[2]);
+    cv::imwrite(GRAB_BASE_NAME + string("5.png"), frames[1]);
 
     // Wait for it, SD card can be _slow_
     this_thread::sleep_for(chrono::seconds(2));
 
     // Assemble
-    auto cmd = string("/usr/local/bin/apngasm");
-    vector<string> outArgs {"-F", "-d", "400", "-o"};
-    auto outFile = string("output.png");
-    char* args[] = {(char*)cmd.c_str(),
-                  (char*)outArgs[3].c_str(),
-                  (char*)outFile.c_str(),
-                  (char*)inFiles[0].c_str(),
-                  (char*)inFiles[1].c_str(),
-                  (char*)inFiles[2].c_str(),
-                  (char*)inFiles[3].c_str(),
-                  (char*)inFiles[2].c_str(),
-                  (char*)inFiles[1].c_str(),
-                  (char*)outArgs[0].c_str(),
-                  (char*)outArgs[1].c_str(),
-                  (char*)outArgs[2].c_str(),
-                  NULL};
-    char* env[] = {NULL};
+    //auto cmd = string("/usr/local/bin/apngasm");
+    //vector<string> outArgs {"-F", "-d", "400", "-o"};
+    //auto outFile = string("output.png");
+    //char* args[] = {(char*)cmd.c_str(),
+    //              (char*)outArgs[3].c_str(),
+    //              (char*)outFile.c_str(),
+    //              (char*)inFiles[0].c_str(),
+    //              (char*)inFiles[1].c_str(),
+    //              (char*)inFiles[2].c_str(),
+    //              (char*)inFiles[3].c_str(),
+    //              (char*)inFiles[2].c_str(),
+    //              (char*)inFiles[1].c_str(),
+    //              (char*)outArgs[0].c_str(),
+    //              (char*)outArgs[1].c_str(),
+    //              (char*)outArgs[2].c_str(),
+    //              NULL};
+    //char* env[] = {NULL};
 
-    int pid;
-    int status = posix_spawn(&pid, cmd.c_str(), NULL, NULL, args, env);
-    if (status == 0)
-        waitpid(pid, nullptr, 0);
+    //int pid;
+    //int status = posix_spawn(&pid, cmd.c_str(), NULL, NULL, args, env);
+    //if (status == 0)
+    //    waitpid(pid, nullptr, 0);
 }

@@ -3,6 +3,7 @@
 import io, time
 import RPi.GPIO as GPIO
 import subprocess
+import time
 
 def mainLoop():
     # Deactivate autofocus for all cameras
@@ -33,6 +34,8 @@ def mainLoop():
     GPIO.setmode(GPIO.BCM)
     GPIO.setup(18, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
+    mplayerProcess = None
+
     while True: 
         inputState = GPIO.input(18)
         # If the button has been pressed
@@ -41,6 +44,26 @@ def mainLoop():
             process = subprocess.Popen(command.split(), stdout=subprocess.PIPE)
             output = process.communicate()[0]
             print(output)
+
+            # Create the avi for mplayer
+            command = "avconv -r 6 -i /tmp/capture_%d.png -y -b:v 1000k -s 320x240 -vf transpose=1,transpose=1,transpose=1 /tmp/capture.avi"
+            convertProcess = subprocess.Popen(command.split(), stdout=subprocess.PIPE)
+            convertProcess.communicate()[0]
+
+            time.sleep(1)
+
+            # Play the avi
+            if mplayerProcess is not None:
+                mplayerProcess.terminate()
+            command = "mplayer -vo fbdev2:/dev/fb1 -x 240 -y 320 -framedrop -loop 0 /tmp/capture.avi"
+            mplayerProcess = subprocess.Popen(command.split(), stdout=subprocess.PIPE)
+
+            # Create the APNG
+            command = "/usr/local/bin/apngasm -o output.png /tmp/capture_0.png /tmp/capture_1.png /tmp/capture_2.png /tmp/capture_3.png /tmp/capture_4.png /tmp/capture_5.png -F -d 200"
+            apngProcess = subprocess.Popen(command.split(), stdout=subprocess.PIPE)
+            apngProcess.wait()
+
+        time.sleep(0.016)
 
     GPIO.cleanup()
 
