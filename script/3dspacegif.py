@@ -41,6 +41,8 @@ def mainLoop():
         inputState = GPIO.input(18)
         # If the button has been pressed
         if inputState == 0:
+            time.sleep(1)
+
             command = "./code/3dbox"
             process = subprocess.Popen(command.split(), stdout=subprocess.PIPE)
             output = process.communicate()[0]
@@ -68,7 +70,7 @@ def mainLoop():
             host = "10.42.0.1"
             port = 22
             transport = paramiko.Transport((host, port))
-            transport.connect(username="xxxx", password="xxxx")
+            transport.connect(username="manu", password="mushroom")
             sftp = paramiko.SFTPClient.from_transport(transport)
             
             import sys
@@ -79,6 +81,9 @@ def mainLoop():
             sftp.close()
             transport.close
             print('Upload done')
+
+            mplayerProcess.terminate()
+            mplayerProcess = None
 
         time.sleep(0.016)
 

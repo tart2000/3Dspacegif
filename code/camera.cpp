@@ -26,8 +26,6 @@ bool Camera::connect(int index)
     }
     else
     {
-        //_camera->release();
-        //_camera = nullptr;
         _cameraIndex = index;
         return true;
     }
@@ -47,7 +45,6 @@ bool Camera::grab()
             cout << "ERROR" << endl;
 
         _camera->release();
-        //_camera = nullptr;
 
         return res;
     }
@@ -58,7 +55,6 @@ bool Camera::grab()
 /*************/
 cv::Mat Camera::retrieve()
 {
-    //_camera.reset(new cv::VideoCapture(_cameraIndex));
     _camera->open(_cameraIndex);
     return _frame;
 }

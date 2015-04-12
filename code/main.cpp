@@ -27,6 +27,14 @@ void rotateAndShift(cv::Mat& frame, int shiftx = 0, int shifty = 0)
 }
 
 /*************/
+void mergeImages(cv::Mat& img, const cv::Mat& fg, int shiftx = 0)
+{
+    for (int y = 0; y < img.rows; ++y)
+        for (int x = 80; x < img.cols + 80; ++x)
+            img.at<cv::Vec3b>(y, x) += fg.at<cv::Vec3b>(y, x + shiftx);
+}
+
+/*************/
 int main(int argc, char** argv)
 {
     vector<unique_ptr<Camera>> cameras;
@@ -42,6 +50,9 @@ int main(int argc, char** argv)
 
     cout << "Number of connected cameras: " << cameras.size() << endl;
 
+    // Load foreground image
+    auto fgImg = cv::imread("assets/images/stars.png", CV_LOAD_IMAGE_COLOR);
+
     // Grab
     for (auto& cam : cameras)
     {
@@ -51,7 +62,7 @@ int main(int argc, char** argv)
 
     // Retrieve, rotate and shift
     //vector<int> cameraShiftX {6, 28, 19, 0};
-    vector<int> cameraShiftX {-29, 0, -14, -26};
+    vector<int> cameraShiftX {-26, 0, -13, -23};
     //vector<int> cameraShiftY {-45, 0, 76, 98};
     vector<int> cameraShiftY {-40, 0, 70, 90};
     int camIndex = 0;
@@ -60,10 +71,17 @@ int main(int argc, char** argv)
     for (auto& cam : cameras)
     {
         cv::Mat frame = cam->retrieve();
+
+        // Rotate the image and shift according to cameraShiftX and Y
         rotateAndShift(frame, cameraShiftX[camIndex], cameraShiftY[camIndex]);
-        //cv::Mat cropped = frame(cv::Rect(98, 0, 337, 611)).clone();
-        cv::Mat cropped = frame(cv::Rect(98, 80, 337, 449)).clone();
+
+        // Crop and resize image
+        cv::Mat cropped = frame(cv::Rect(98, 160, 337, 449)).clone();
         cv::resize(cropped, frame, cv::Size(480, 640));
+        
+        // Add a foreground
+        mergeImages(frame, fgImg, cameraShiftY[camIndex] / 2);
+
         string filename = GRAB_BASE_NAME + to_string(camIndex) + ".png";
         cv::imwrite(filename, frame);
         inFiles.push_back(filename);
