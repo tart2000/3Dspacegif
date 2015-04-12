@@ -26,8 +26,8 @@ bool Camera::connect(int index)
     }
     else
     {
-        _camera->release();
-        _camera = nullptr;
+        //_camera->release();
+        //_camera = nullptr;
         _cameraIndex = index;
         return true;
     }
@@ -36,20 +36,18 @@ bool Camera::connect(int index)
 /*************/
 bool Camera::grab()
 {
-    _camera.reset(new cv::VideoCapture(_cameraIndex));
     if (_camera->isOpened())
     {
         cv::Mat frame;
         bool res;
-        res = _camera->grab();
-        res &= _camera->retrieve(frame);
+        res = _camera->read(frame);
         if (res)
             _frame = frame.clone();
         else
             cout << "ERROR" << endl;
 
         _camera->release();
-        _camera = nullptr;
+        //_camera = nullptr;
 
         return res;
     }
@@ -60,5 +58,7 @@ bool Camera::grab()
 /*************/
 cv::Mat Camera::retrieve()
 {
+    //_camera.reset(new cv::VideoCapture(_cameraIndex));
+    _camera->open(_cameraIndex);
     return _frame;
 }

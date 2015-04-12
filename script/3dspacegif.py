@@ -4,6 +4,7 @@ import io, time
 import RPi.GPIO as GPIO
 import subprocess
 import time
+import paramiko
 
 def mainLoop():
     # Deactivate autofocus for all cameras
@@ -62,6 +63,22 @@ def mainLoop():
             command = "/usr/local/bin/apngasm -o output.png /tmp/capture_0.png /tmp/capture_1.png /tmp/capture_2.png /tmp/capture_3.png /tmp/capture_4.png /tmp/capture_5.png -F -d 200"
             apngProcess = subprocess.Popen(command.split(), stdout=subprocess.PIPE)
             apngProcess.wait()
+
+            # Send to the server
+            host = "10.42.0.1"
+            port = 22
+            transport = paramiko.Transport((host, port))
+            transport.connect(username="xxxx", password="xxxx")
+            sftp = paramiko.SFTPClient.from_transport(transport)
+            
+            import sys
+            localpath = './output.png'
+            targetpath = './src/3dBox/space_gif_online/content/gifs/img_' + str(time.time()) + '.png'
+            sftp.put(localpath, targetpath)
+            
+            sftp.close()
+            transport.close
+            print('Upload done')
 
         time.sleep(0.016)
 
