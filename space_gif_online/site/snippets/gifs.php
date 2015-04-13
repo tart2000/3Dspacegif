@@ -14,16 +14,15 @@
 
 <div class="row">
   <?php if($gifpage->pagination()->hasPages()): ?>
-    <nav class="pagination">
-
-    <?php if($gifpage->pagination()->hasNextPage()): ?>
-    <a class="next" href="<?php echo $articles->pagination()->nextPageURL() ?>">&lsaquo; newer posts</a>
-    <?php endif ?>
-
-    <?php if($gifpage->pagination()->hasPrevPage()): ?>
-    <a class="prev" href="<?php echo $articles->pagination()->prevPageURL() ?>">older posts &rsaquo;</a>
-    <?php endif ?>
-
+    <nav>
+      <ul class="pager">
+        <?php if($gifpage->pagination()->hasNextPage()): ?>
+          <li class="previous"><a href="<?php echo $gifpage->pagination()->nextPageURL() ?>"><span aria-hidden="true">&larr;</span> Older</a></li>
+        <?php endif ?>
+        <?php if($gifpage->pagination()->hasPrevPage()): ?>
+          <li class="next"><a href="<?php echo $gifpage->pagination()->prevPageURL() ?>">Newer <span aria-hidden="true">&rarr;</span></a></li>
+        <?php endif ?>
+      </ul>
     </nav>
   <?php endif ?>
 </div>
