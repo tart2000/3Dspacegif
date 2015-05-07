@@ -5,7 +5,7 @@
     </div>
 
     <div class="colophon">
-      Made with <b>♥</b> by <a href="http://mozzarellabs.com/">Mozzarellabs</a> during MTL's 2015 Space Apps Challenge.
+      Made with <b>♥</b> by <a href="http://mozzarellabs.com/">Mozzarellabs</a> for Chromatic.
     </div>
 
   </footer>
