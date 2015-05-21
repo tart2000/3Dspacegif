@@ -50,8 +50,25 @@ int main(int argc, char** argv)
 
     cout << "Number of connected cameras: " << cameras.size() << endl;
 
+    // If any arg is given, launch exposure calibration
+    if (argc > 1)
+    {
+        cout << "Calibration exposure!" << endl;
+        for (auto& cam : cameras)
+        {
+            for (int i = 0; i < 30; ++i)
+            {
+                if (!cam->grab())
+                    cout << "Error grabbing on one camera" << endl;
+                auto frame = cam->retrieve();
+                //this_thread::sleep_for(chrono::milliseconds(33));
+            }
+        }
+        exit(0);
+    }
+
     // Load foreground image
-    auto fgImg = cv::imread("assets/images/stars.png", CV_LOAD_IMAGE_COLOR);
+    //auto fgImg = cv::imread("assets/images/stars.png", CV_LOAD_IMAGE_COLOR);
 
     // Grab
     for (auto& cam : cameras)
@@ -62,9 +79,9 @@ int main(int argc, char** argv)
 
     // Retrieve, rotate and shift
     //vector<int> cameraShiftX {6, 28, 19, 0};
-    vector<int> cameraShiftX {-26, 0, -13, -23};
+    vector<int> cameraShiftX {-6, 20, 6, -8};
     //vector<int> cameraShiftY {-45, 0, 76, 98};
-    vector<int> cameraShiftY {-40, 0, 70, 90};
+    vector<int> cameraShiftY {-28, -12, 29, 31};
     int camIndex = 0;
     vector<string> inFiles;
     vector<cv::Mat> frames;
@@ -76,11 +93,11 @@ int main(int argc, char** argv)
         rotateAndShift(frame, cameraShiftX[camIndex], cameraShiftY[camIndex]);
 
         // Crop and resize image
-        cv::Mat cropped = frame(cv::Rect(98, 160, 337, 449)).clone();
+        cv::Mat cropped = frame(cv::Rect(31, 60, 421, 561)).clone();
         cv::resize(cropped, frame, cv::Size(480, 640));
         
         // Add a foreground
-        mergeImages(frame, fgImg, cameraShiftY[camIndex] / 2);
+        //mergeImages(frame, fgImg, cameraShiftY[camIndex] / 2);
 
         string filename = GRAB_BASE_NAME + to_string(camIndex) + ".png";
         cv::imwrite(filename, frame);
