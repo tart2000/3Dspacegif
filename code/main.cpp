@@ -78,10 +78,11 @@ int main(int argc, char** argv)
     }
 
     // Retrieve, rotate and shift
-    //vector<int> cameraShiftX {6, 28, 19, 0};
-    vector<int> cameraShiftX {-6, 20, 6, -8};
-    //vector<int> cameraShiftY {-45, 0, 76, 98};
-    vector<int> cameraShiftY {-28, -12, 29, 31};
+    //vector<int> cameraShiftX {-6, 20, 6, -8};
+    //vector<int> cameraShiftY {-28, -12, 29, 31};
+    vector<int> cameraShiftX {-6, 19, 3, -12};
+    vector<int> cameraShiftY {-28, -14, 23, 21};
+
     int camIndex = 0;
     vector<string> inFiles;
     vector<cv::Mat> frames;
@@ -93,7 +94,7 @@ int main(int argc, char** argv)
         rotateAndShift(frame, cameraShiftX[camIndex], cameraShiftY[camIndex]);
 
         // Crop and resize image
-        cv::Mat cropped = frame(cv::Rect(31, 60, 421, 561)).clone();
+        cv::Mat cropped = frame(cv::Rect(32, 60, 420, 561)).clone();
         cv::resize(cropped, frame, cv::Size(480, 640));
         
         // Add a foreground

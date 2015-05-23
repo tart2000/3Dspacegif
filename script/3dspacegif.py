@@ -7,18 +7,14 @@ import time
 import paramiko
 import signal
 
-continueLoop = True
-
-def sigHandler(signum, frame):
-    global continueLoop
-    continueLoop = False
+def exit():
+    import sys
+    GPIO.output(24, GPIO.LOW)
+    command = "/usr/bin/sudo /sbin/shutdown -h now"
+    process = subprocess.Popen(command.split(), stdout=subprocess.PIPE)
+    output = process.communicate()[0]
 
 def mainLoop():
-    global continueLoop
-
-    signal.signal(signal.SIGTERM, sigHandler)
-    signal.signal(signal.SIGQUIT, sigHandler)
-
     # Deactivate autofocus for all cameras
     cameraDev = ["/dev/video0",
                  "/dev/video1",
@@ -59,10 +55,34 @@ def mainLoop():
     GPIO.setup(24, GPIO.OUT)
     GPIO.output(24, GPIO.HIGH)
 
-    while continueLoop: 
+    ledTimestamp = 0
+
+    while True: 
         inputState = GPIO.input(18)
+
+        if ledTimestamp == 0:
+            GPIO.output(24, GPIO.HIGH)
+        elif ledTimestamp == 60:
+            GPIO.output(24, GPIO.LOW)
+        ledTimestamp = (ledTimestamp + 1) % 120
+
         # If the button has been pressed
         if inputState == 0:
+            # If the button is kept pressed, we exit the program
+            duration = 0
+            doExitNow = False
+            while GPIO.input(18) == 0:
+                time.sleep(0.016)
+                duration += 1
+                if duration >= 180:
+                    doExitNow = True
+                    break
+            if doExitNow:
+                exit()
+
+            # If not, grab!
+            GPIO.output(24, GPIO.HIGH)
+
             time.sleep(1)
 
             command = "./code/3dbox"
@@ -84,7 +104,7 @@ def mainLoop():
             #mplayerProcess = subprocess.Popen(command.split(), stdout=subprocess.PIPE)
 
             # Create the APNG
-            command = "/usr/local/bin/apngasm -o output.png /tmp/capture_0.png /tmp/capture_1.png /tmp/capture_2.png /tmp/capture_3.png /tmp/capture_4.png /tmp/capture_5.png -F -d 200"
+            command = "/usr/local/bin/apngasm -o output.png /tmp/capture_0.png /tmp/capture_1.png /tmp/capture_2.png /tmp/capture_3.png /tmp/capture_4.png /tmp/capture_5.png -F -d 100"
             apngProcess = subprocess.Popen(command.split(), stdout=subprocess.PIPE)
             apngProcess.wait()
 
@@ -106,6 +126,7 @@ def mainLoop():
 
             #mplayerProcess.terminate()
             #mplayerProcess = None
+            GPIO.output(24, GPIO.LOW)
 
         time.sleep(0.016)
 
