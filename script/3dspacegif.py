@@ -5,6 +5,14 @@ import RPi.GPIO as GPIO
 import subprocess
 import time
 import paramiko
+import signal
+
+def exit():
+    import sys
+    GPIO.output(24, GPIO.LOW)
+    command = "/usr/bin/sudo /sbin/shutdown -h now"
+    process = subprocess.Popen(command.split(), stdout=subprocess.PIPE)
+    output = process.communicate()[0]
 
 def mainLoop():
     # Deactivate autofocus for all cameras
@@ -37,10 +45,44 @@ def mainLoop():
 
     mplayerProcess = None
 
+    # Calibrate the exposures
+    command = "./code/3dbox"
+    process = subprocess.Popen(command.split(), stdout=subprocess.PIPE)
+    output = process.communicate()[0]
+
+    print("READY TO GO")
+
+    GPIO.setup(24, GPIO.OUT)
+    GPIO.output(24, GPIO.HIGH)
+
+    ledTimestamp = 0
+
     while True: 
         inputState = GPIO.input(18)
+
+        if ledTimestamp == 0:
+            GPIO.output(24, GPIO.HIGH)
+        elif ledTimestamp == 60:
+            GPIO.output(24, GPIO.LOW)
+        ledTimestamp = (ledTimestamp + 1) % 120
+
         # If the button has been pressed
         if inputState == 0:
+            # If the button is kept pressed, we exit the program
+            duration = 0
+            doExitNow = False
+            while GPIO.input(18) == 0:
+                time.sleep(0.016)
+                duration += 1
+                if duration >= 180:
+                    doExitNow = True
+                    break
+            if doExitNow:
+                exit()
+
+            # If not, grab!
+            GPIO.output(24, GPIO.HIGH)
+
             time.sleep(1)
 
             command = "./code/3dbox"
@@ -49,20 +91,20 @@ def mainLoop():
             print(output)
 
             # Create the avi for mplayer
-            command = "avconv -r 6 -i /tmp/capture_%d.png -y -b:v 1000k -s 320x240 -vf transpose=1,transpose=1,transpose=1 /tmp/capture.avi"
-            convertProcess = subprocess.Popen(command.split(), stdout=subprocess.PIPE)
-            convertProcess.communicate()[0]
+            #command = "avconv -r 6 -i /tmp/capture_%d.png -y -b:v 1000k -s 320x240 -vf transpose=1,transpose=1,transpose=1 /tmp/capture.avi"
+            #convertProcess = subprocess.Popen(command.split(), stdout=subprocess.PIPE)
+            #convertProcess.communicate()[0]
 
-            time.sleep(1)
+            #time.sleep(1)
 
             # Play the avi
-            if mplayerProcess is not None:
-                mplayerProcess.terminate()
-            command = "mplayer -vo fbdev2:/dev/fb1 -x 240 -y 320 -framedrop -loop 0 /tmp/capture.avi"
-            mplayerProcess = subprocess.Popen(command.split(), stdout=subprocess.PIPE)
+            #if mplayerProcess is not None:
+            #    mplayerProcess.terminate()
+            #command = "mplayer -vo fbdev2:/dev/fb1 -x 240 -y 320 -framedrop -loop 0 /tmp/capture.avi"
+            #mplayerProcess = subprocess.Popen(command.split(), stdout=subprocess.PIPE)
 
             # Create the APNG
-            command = "/usr/local/bin/apngasm -o output.png /tmp/capture_0.png /tmp/capture_1.png /tmp/capture_2.png /tmp/capture_3.png /tmp/capture_4.png /tmp/capture_5.png -F -d 200"
+            command = "/usr/local/bin/apngasm -o output.png /tmp/capture_0.png /tmp/capture_1.png /tmp/capture_2.png /tmp/capture_3.png /tmp/capture_4.png /tmp/capture_5.png -F -d 100"
             apngProcess = subprocess.Popen(command.split(), stdout=subprocess.PIPE)
             apngProcess.wait()
 
@@ -82,8 +124,9 @@ def mainLoop():
             transport.close
             print('Upload done')
 
-            mplayerProcess.terminate()
-            mplayerProcess = None
+            #mplayerProcess.terminate()
+            #mplayerProcess = None
+            GPIO.output(24, GPIO.LOW)
 
         time.sleep(0.016)
 

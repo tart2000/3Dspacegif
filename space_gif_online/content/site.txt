@@ -1,4 +1,4 @@
-Title: 3D Space GIF
+Title: GifMachina
 
 ----
 
@@ -6,7 +6,7 @@ Author: Mozzarellabs
 
 ----
 
-Description: This is Kirby's Starterkit.
+Description: Your favorite 3D GIFs. From space. 
 
 ----
 
